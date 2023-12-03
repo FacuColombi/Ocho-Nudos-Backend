@@ -9,3 +9,12 @@ export const storage = multer.diskStorage({
         cb(null, `${uniqueSuffix}-${file.originalname}`)
     }
 });
+
+export const storagePdf = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, './public/pdf/');
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname);
+    }
+})

@@ -3,15 +3,18 @@ import dotenv from "dotenv";
 import connectDB from "./utils/db.js";
 import bodyParser from "body-parser";
 import multer from "multer";
+import path from "path";
 import { login, register } from "./routes/users.js";
 import { createBooking, getBookings, changeStatus } from "./routes/bookings.js";
 import { createNewEvent, getAllEvents, deleteEvent, updateEvent } from "./routes/events.js";
-import { storage } from "./utils/storageMulter.js";
+import { storage, storagePdf } from "./utils/storageMulter.js";
+import { uploadMenuPdf } from "./routes/uploadMenuPdf.js";
 
 
 
 const app = express();
 app.use(express.json());
+app.use("/public",express.static('./public/'));
 dotenv.config();
 connectDB();
 
@@ -41,3 +44,6 @@ app.get("/events", getAllEvents);
 app.post("/events", upload.single('event_img'), createNewEvent);
 app.put("/events", updateEvent);
 app.delete("/events", deleteEvent);
+// ------------------ MENUS PDF ----------------- //
+const uploadPdf = multer({storage: storagePdf});
+app.post("/upload/pdf", uploadPdf.single("menu_pdf"), uploadMenuPdf);
