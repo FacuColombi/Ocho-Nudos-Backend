@@ -4,15 +4,19 @@ import connectDB from "./utils/db.js";
 import bodyParser from "body-parser";
 import multer from "multer";
 import path from "path";
+import cors from "cors";
 import { login, register } from "./routes/users.js";
 import { createBooking, getBookings, changeStatus } from "./routes/bookings.js";
 import { createNewEvent, getAllEvents, deleteEvent, updateEvent } from "./routes/events.js";
 import { storage, storagePdf } from "./utils/storageMulter.js";
 import { uploadMenuPdf } from "./routes/uploadMenuPdf.js";
-
+import { getReviews } from "./routes/reviews.js";
 
 
 const app = express();
+app.use(cors({
+    origin: 'http://localhost:5173'
+}));
 app.use(express.json());
 app.use("/public",express.static('./public/'));
 dotenv.config();
@@ -47,3 +51,5 @@ app.delete("/events", deleteEvent);
 // ------------------ MENUS PDF ----------------- //
 const uploadPdf = multer({storage: storagePdf});
 app.post("/upload/pdf", uploadPdf.single("menu_pdf"), uploadMenuPdf);
+// ------------------ REVIEWS ----------------- //
+app.get("/reviews", getReviews);

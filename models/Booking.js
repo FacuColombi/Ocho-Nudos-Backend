@@ -9,7 +9,7 @@ const bookingSchema = new Schema({
     email: {type:String, require:true},
     phone: {type:String, require:true},
     qtyPeople: {type:Number, require:true},
-    hour: {type:String, require:true},
+    hour: {type:String},
     date: {type:String, require:true},
     comments: {type: String},
     status: {type: String, enum: ['PENDING', 'CONFIRMED', 'CANCELLED'], default: 'PENDING'},
