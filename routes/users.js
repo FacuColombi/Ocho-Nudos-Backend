@@ -17,9 +17,9 @@ export async function login(req, res) {
       role: user?.role,
     };
 
-    return res.status(200).json(response("Usuario logueado", false, userToReturn));
+    return res.status(200).json(response("Usuario logueado", 200, false, userToReturn));
   } catch (error) {
-    res.status(500).json(response("Error al loguear usuario", true, error));
+    res.status(500).json(response("Error al loguear usuario", 500,true, error));
   }
 }
 

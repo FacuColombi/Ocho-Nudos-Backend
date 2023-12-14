@@ -6,7 +6,7 @@ import response from "../utils/response.js";
 export async function getAllEvents(req, res) {
     try{
         const events = await Event.find();
-        res.status(200).json(response("Eventos obtenidos", false, events));
+        res.status(200).json(response("Eventos obtenidos", 200, false, events));
     }catch(e){
         res.status(500).json(response("Error al obtener los eventos", 500, true));
     }
@@ -34,7 +34,7 @@ export async function createNewEvent(req, res) {
 
         let eventCreated = await newEvent.save();
 
-        res.status(201).json(response("Evento creado", false, eventCreated));
+        res.status(201).json(response("Evento creado", 201,  false, eventCreated));
 
     } catch (e) {
         const error = JSON.parse(e?.message || {});
@@ -81,6 +81,7 @@ export async function updateEvent(req, res) {
 export async function deleteEvent(req, res) {
 
     try {
+
         const event = await Event.findById(req.body?.id);
         if (!event) throw new Error(response("Evento no encontrado", 404, true));
 
@@ -89,7 +90,7 @@ export async function deleteEvent(req, res) {
 
         await event.deleteOne();
 
-        res.status(200).json(response("Evento eliminado", false));
+        res.status(200).json(response("Evento eliminado", 200, false));
 
     }catch(e){
         res.status(500).json(response("Error al eliminar el evento", 500, true));

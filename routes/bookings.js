@@ -6,18 +6,23 @@ import response from "../utils/response.js";
 export async function createBooking(req, res) {
     try {
         //Check if fields complete
-        if (!req.body?.type || !req.body?.email || !req.body?.fullName || !req.body?.phone || !req.body?.date || !req.body?.hour || !req.body?.qtyPeople) return res.status(400).json(response("Faltan campos", true));
-        if (!req.body?.date.includes("-")) return res.status(400).json(response("Formato de fecha incorrecto", true));
-        if (!req.body?.hour.includes(":")) return res.status(400).json(response("Formato de hora incorrecto", true));
-        
+        if (!req.body?.type || !req.body?.email || !req.body?.fullName || !req.body?.phone || !req.body?.date || !req.body?.qtyPeople) return res.status(400).json(response("Faltan campos", 400, true));
+        if (!req.body?.date.includes("-")) return res.status(400).json(response("Formato de fecha incorrecto", 400,  true));
 
         // Check if email is valid
         const emailRegex = /\S+@\S+\.\S+/;
-        if (!emailRegex.test(req.body?.email)) return res.status(400).json(response("Email invalido", true));
+        if (!emailRegex.test(req.body?.email)) return res.status(400).json(response("Email invalido", 400, true));
+        
+        if(req.body?.type === "BOOKING"){
+            if(!req.body?.hour?.includes(":")) return res.status(400).json(response("Formato de hora incorrecto", 400, true));
 
-        // Validate if there is a booking with the same email and date and time
-        const bookings = await Booking.find({ email: req.body?.email, date: req.body?.date, hour: req.body?.hour });
-        if (bookings.length > 0) return res.status(400).json(response("Ya existe una reserva con ese email, fecha y hora", true));
+            const bookings = await Booking.find({ email: req.body?.email, date: req.body?.date, hour: req.body?.hour, bookingType: req.body?.type });
+            if (bookings.length > 0) return res.status(400).json(response("Ya existe una reserva con asociada al mail, dia y hora.", 400, true));
+        }else{
+            // Validate if there is a booking with the same email and date and time
+            const bookings = await Booking.find({ email: req.body?.email, date: req.body?.date, bookingType: req.body?.type });
+            if (bookings.length > 0) return res.status(400).json(response("Ya existe una fiesta asociada al mail y al dia.", 400, true));
+        }
 
         let newBooking = {
             bookingType: req.body?.type,
@@ -25,21 +30,20 @@ export async function createBooking(req, res) {
             fullName: req.body?.fullName,
             phone: req.body?.phone,
             date: req.body?.date,
-            hour: req.body?.hour,
             qtyPeople: req.body?.qtyPeople,
             comments: req.body?.comments
         }
         
-        // If location is present it means that the booking is for a party
+        if(req.body?.hour) newBooking.hour = req.body?.hour;
         if(req.body?.location) newBooking.location = req.body?.location;
 
         // Create booking
         const bookingToCreate = new Booking(newBooking);
         const bookCreated = await bookingToCreate.save();
-        res.status(201).json(response("Reserva creada correctamente", false, bookCreated));
+        res.status(201).json(response("Reserva creada correctamente", 201, false, bookCreated));
         
     } catch(error) {
-        res.status(500).json(response("Error interno", true, error));
+        res.status(500).json(response("Error interno", 500, true, error));
     }
 }
 
