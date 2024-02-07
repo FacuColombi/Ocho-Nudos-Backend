@@ -15,7 +15,7 @@ import { getReviews } from "./routes/reviews.js";
 
 const app = express();
 app.use(cors({
-    origin: 'https://ocho-nudos-backend.onrender.com'
+    origin: 'http://localhost:5173'
 }));
 app.use(express.json());
 app.use("/public",express.static('./public/'));
